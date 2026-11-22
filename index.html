@@ -65,23 +65,59 @@ footer strong{color:#334155}
 <main>
 
 <section id="start" class="panel">
-<h2>Welcome to the Quiz</h2>
 
-<div class="meta">
-<span class="pill">50 Questions</span>
-<span class="pill">Mixed Difficulty</span>
-</div>
+  <h2>Welcome to the OOP C++ Group Quiz!</h2>
 
-<label for="cms">Enter your CMS number</label>
-<input id="cms" type="text" maxlength="30"
-placeholder="Enter your CMS number" autocomplete="off">
+  <div class="meta">
+    <span class="pill">50 Questions</span>
+    <span class="pill">Mixed Difficulty</span>
+  </div>
 
-<p id="cmsMessage" role="status" aria-live="polite"></p>
-<p id="verifiedStudent" class="hidden"></p>
+  <div style="background:#f1f6ff;border:1px solid #dbe7fa;border-radius:12px;padding:18px;margin:18px 0">
 
-<button class="primary" id="startButton" onclick="startQuiz()">
-Verify CMS &amp; Start Quiz
-</button>
+    <h3 style="margin-top:0;color:#1e3a5f">Quiz Instructions</h3>
+
+    <ol style="padding-left:22px;line-height:1.8;color:#334155">
+      <li>This quiz contains 50 multiple-choice questions.</li>
+      <li>Read each question carefully before selecting an answer.</li>
+      <li>Select the most appropriate answer for every question.</li>
+      <li>You can move between questions and change your answers before submitting.</li>
+      <li>Review your answers before final submission.</li>
+      <li>Your score and percentage will be recorded automatically after successful submission.</li>
+      <li>Each CMS number can be used for only one successful submission.</li>
+    </ol>
+
+    <p style="margin-bottom:0;color:#b45309;font-weight:700">
+      Important: Do not refresh or close the quiz while attempting it.
+    </p>
+
+  </div>
+
+  <div style="background:#fff8e8;border:1px solid #f3d69b;border-radius:10px;padding:14px;margin-bottom:18px">
+    <strong style="color:#92400e">CMS Entry:</strong>
+    <p style="margin:6px 0 0;color:#78350f;line-height:1.6">
+      Enter your correct registered CMS number without any spaces. Double-check your CMS before proceeding.
+    </p>
+  </div>
+
+  <label for="cms">Enter your CMS number</label>
+
+  <input
+    id="cms"
+    type="text"
+    maxlength="30"
+    placeholder="Enter your CMS number"
+    autocomplete="off"
+  >
+
+  <p id="cmsMessage" role="status" aria-live="polite"></p>
+
+  <p id="verifiedStudent" class="hidden"></p>
+
+  <button class="primary" id="startButton" onclick="startQuiz()">
+    Verify CMS &amp; Start Quiz
+  </button>
+
 </section>
 
 <section id="quiz" class="panel hidden">
