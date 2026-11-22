@@ -50,6 +50,21 @@ footer strong{color:#334155}
 .question{font-size:19px}
 .nav button{flex:1}
 }
+  .loader {
+  width: 52px;
+  height: 52px;
+  border: 5px solid #dbeafe;
+  border-top: 5px solid #2563eb;
+  border-radius: 50%;
+  animation: quizSpin 0.8s linear infinite;
+  margin: 0 auto 22px;
+}
+
+@keyframes quizSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>
 </head>
 
@@ -146,6 +161,16 @@ footer strong{color:#334155}
 <button class="danger" onclick="submitQuiz()">Submit Quiz</button>
 </div>
 
+</section>
+  <section id="submitting" class="panel hidden" style="text-align:center;padding:55px 20px">
+  <div class="loader"></div>
+  <h2>Submitting Your Quiz...</h2>
+  <p style="color:#64748b">
+    Please wait while we securely process your submission.
+  </p>
+  <p style="color:#2563eb;font-weight:600">
+    Do not refresh or close this page.
+  </p>
 </section>
 
 <section id="result" class="panel hidden">
@@ -479,66 +504,66 @@ function move(d) {
 // ==========================================
 
 async function submitQuiz() {
+  if (submitting) return;
 
-    if (submitting) return;
+  let n = answers.filter(x => x === null).length;
 
-    let n = answers.filter(x => x === null).length;
+  if (n && !confirm(`${n} question(s) unanswered. Submit anyway?`)) {
+    return;
+  }
 
-    if (n && !confirm(`${n} question(s) unanswered. Submit anyway?`)) {
-        return;
-    }
+  if (!verifiedCMS) {
+    alert("Your CMS has not been verified. Please reload the quiz and verify your CMS.");
+    return;
+  }
 
-    if (!verifiedCMS) {
-        alert("Your CMS has not been verified. Please reload the quiz and verify your CMS.");
-        return;
-    }
+  submitting = true;
 
-    submitting = true;
+  const buttons = document.querySelectorAll('#quiz button');
+  buttons.forEach(b => b.disabled = true);
 
-    const buttons = document.querySelectorAll("#quiz button");
-    buttons.forEach(b => b.disabled = true);
+  // Show loading screen
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('submitting').classList.remove('hidden');
 
-    let score = 0;
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.answer) score++;
+  });
 
-    questions.forEach((q, i) => {
-        if (answers[i] === q.answer) score++;
+  try {
+    const result = await callBackend({
+      action: "submit",
+      cms: verifiedCMS,
+      score: score,
+      total: questions.length
     });
 
-    const message = document.getElementById("submissionMessage");
-
-    try {
-
-        const result = await callBackend({
-            action: "submit",
-            cms: verifiedCMS,
-            score: score,
-            total: questions.length
-        });
-
-        if (!result.success) {
-
-            alert(result.message || "The submission was not accepted.");
-
-            buttons.forEach(b => b.disabled = false);
-            submitting = false;
-            return;
-        }
-
-        message.textContent =
-            result.message || "Your quiz has been submitted successfully.";
-
-        showResult();
-
-    } catch (error) {
-
-        alert(
-            (error.message || "Submission failed.") +
-            " Your answers are still on this page. Please try submitting again."
-        );
-
-        buttons.forEach(b => b.disabled = false);
-        submitting = false;
+    if (!result.success) {
+      throw new Error(result.message || "The submission was not accepted.");
     }
+
+    document.getElementById('submissionMessage').textContent =
+      result.message || "Your quiz has been submitted successfully.";
+
+    // Hide loading screen and show results
+    document.getElementById('submitting').classList.add('hidden');
+    showResult();
+
+  } catch (error) {
+    // Return to quiz if submission fails
+    document.getElementById('submitting').classList.add('hidden');
+    document.getElementById('quiz').classList.remove('hidden');
+
+    buttons.forEach(b => b.disabled = false);
+
+    submitting = false;
+
+    alert(
+      (error.message || "Submission failed.") +
+      " Your answers are still on this page. Please try submitting again."
+    );
+  }
 }
 
 
